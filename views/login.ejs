@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="/favicon.ico">
+
+	<title>注册 - 班级说说</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="/css/jumbotron.css" rel="stylesheet">
+	<style>
+		.alert, #registModal {
+			display: none;
+		}
+	</style>
+	<script src="/js/jquery-1.11.3.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<% include header.ejs %>
+
+<div class="container jumbotron">
+	<div class="row">
+		<h1>登陆</h1>
+		<form>
+			<div class="form-group">
+				<label for="username">用户名</label>
+				<input type="text" class="form-control" id="username" placeholder="用户名，可以是中文，不能和别人重复">
+			</div>
+			<div class="form-group">
+				<label for="password">密码</label>
+				<input type="password" class="form-control" id="password" placeholder="密码，至少六位">
+			</div>
+
+			<button type="button" id="login" class="btn btn-default">登陆</button>
+		</form>
+		<div class="alert alert-danger" id="tishi" role="alert"></div>
+	</div>
+
+	<div id="registModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+					<p id="registModalContent"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<footer>
+		<p>&copy; 2016 Company, Inc.</p>
+	</footer>
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script>
+
+	$('input').focus(function () {
+        $('#tishi').fadeOut();
+    });
+
+	$('#login').click(function () {
+	    $('#registModal').modal('show');
+	    $('#registModalContent').html('登陆中...')
+		//sleep(3000);
+	    console.log('regist');
+        $.post('/doLogin',{
+            'username':$('#username').val(),
+            'password':$('#password').val()
+        },function (result) {
+            if(result =='1'){
+                //注册成功
+	            console.log('登陆成功');
+
+				$('#registModalContent').html('登陆成功，即将跳转到首页...');
+				//sleep(3000);
+	            $('#registModal').modal('hide');
+
+	            window.location='/';
+            }else{
+                //用户名被占用
+                $('#tishi').fadeIn();
+                $('#registModal').modal('hide');
+                $('#tishi').html('登陆失败。。。用户名或密码错误');
+            }
+        });
+    });
+	function sleep(milliseconds) {
+		var date=new Date();
+		var timestamp=date.getTime();
+		console.log(timestamp);
+		while((new Date().getTime()-timestamp)<milliseconds){
+			console.log(new Date().getTime()-timestamp);
+		}
+		return;
+    }
+    //sleep(100);
+</script>
+</body>
+</html>

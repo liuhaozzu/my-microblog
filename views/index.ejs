@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="/favicon.ico">
+
+	<title>班级说说</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="/css/jumbotron.css" rel="stylesheet">
+	<style>
+		.alert, #registModal {
+			display: none;
+		}
+		.grid {
+			height: 200px;
+		}
+		.avatar {
+			border-radius:50%;
+		}
+		#allShuoshuo {
+			height: 600px;
+		}
+	</style>
+</head>
+
+<body>
+<% include header.ejs %>
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+	<%if(!login){%>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6">
+				<h1>
+					欢迎！！！
+				</h1>
+				<p>班级说说是我们交流的园地，欢迎注册</p>
+				<p><a class="btn btn-primary btn-lg" href="/regist" role="button">注册</a></p>
+			</div>
+			<div class="col-lg-6">
+				<h1>
+					已有账号登陆
+				</h1>
+				<form>
+					<div class="form-group">
+						<label for="username">用户名</label>
+						<input type="text" class="form-control" id="username" placeholder="用户名，可以是中文，不能和别人重复">
+					</div>
+					<div class="form-group">
+						<label for="password">密码</label>
+						<input type="password" class="form-control" id="password" placeholder="密码，至少六位">
+					</div>
+
+					<button type="button" id="login" class="btn btn-default">登陆</button>
+				</form>
+				<div class="alert alert-danger" id="tishi" role="alert"></div>
+				<div id="registModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+					<div class="modal-dialog modal-sm" role="document">
+						<div class="modal-content">
+							<div class="modal-body">
+								<p id="registModalContent"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<%}else{%>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-1">
+				<a href="/showSetAvatar"><img class="avatar" src="/avatar/<%=avatar%>" alt="头像"></a>
+			</div>
+			<div class="col-lg-6 col-lg-offset-1">
+				<p>Hello, <%=username%></p>
+				<textarea name="content" id="content" cols="80" rows="3"></textarea>
+				<button type="button" id="postShuoshuo" class="btn btn-success">发表说说</button>
+			</div>
+
+		</div>
+	</div>
+	<%}%>
+</div>
+
+
+<div class="container">
+	<nav aria-label="Page navigation">
+		<ul class="pagination"></ul>
+	</nav>
+
+	<!-- Example row of columns -->
+	<div class="row grid" id="allShuoshuo"></div>
+
+	<hr>
+
+	<footer>
+		<p>&copy; 2016 Company, Inc.</p>
+	</footer>
+</div> <!-- /container -->
+<script type="text/template" id="muban">
+	<div class="col-md-4">
+		<h2><img width="36" class="avatar" src="/avatar/{{=avatar}}" alt=""> {{=username}} 说：</h2>
+		<p>{{=content}}</p>
+		<p>{{=datetime}}</p>
+		<p><a class="btn btn-default" href="#" role="button">查看详情 &raquo;</a></p>
+	</div>
+</script>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/underscore-noflect.js"></script>
+
+<script>
+    $.get('/getshuoshuoamount',function (result) {
+        //总页数
+        var amount=parseInt(result);
+        console.log(amount);
+        var pageamount=Math.ceil(amount/20);
+        for(var i=0;i<pageamount;i++){
+            $('.pagination').append('<li><a href="javascript:void(0);">'+i+'</a></li>');
+        }
+        $('.pagination li:first').addClass('active');
+        $('.pagination li').click(function () {
+	         var page=$(this).index();
+	         getPage(page);
+	         $(this).addClass('active').siblings().removeClass('active');
+        });
+    });
+</script>
+
+
+<script>
+	var $allShuoshuo=$('#allShuoshuo');
+	//得到模板函数
+	var compiled=_.template($('#muban').html());
+	getPage(0);
+    //Ajax读取文章列表
+	function getPage(page) {
+	    $('#allShuoshuo').html('');
+        $.ajax({
+            url:'/getAllShuoshuo?page='+page,
+            type:'get',
+            async:true,
+            success:function (result) {
+                console.log(result);
+                (function iterator(i){
+
+                    console.log(i+'>>>'+(result.r.length));
+                    if(i==result.r.length){
+                        //在这里书写请求完毕之后做的事情
+                        return;
+                    }
+                    console.log(i+'>'+result.r[i].username)
+                    //Ajax嵌套，内层函数必须同步
+                    $.get('/getUserInfo?username='+result.r[i].username,
+                        function (result2) {
+                            result.r[i].avatar=result2.r.avatar;
+                            //组装模板
+                            var htmlStr=compiled(result.r[i]);
+                            $allShuoshuo.append($(htmlStr));
+                            iterator(i+1);
+                        });
+                })(0)
+            }
+        });
+    }
+
+
+    $('input').focus(function () {
+        $('#tishi').fadeOut();
+    });
+    $('#login').click(function () {
+        $('#registModal').modal('show');
+        $('#registModalContent').html('登陆中...')
+        //sleep(3000);
+        console.log('regist');
+        $.post('/doLogin',{
+            'username':$('#username').val(),
+            'password':$('#password').val()
+        },function (result) {
+            if(result =='1'){
+                //注册成功
+                console.log('登陆成功');
+
+                $('#registModalContent').html('登陆成功，即将跳转到首页...');
+                //sleep(3000);
+                $('#registModal').modal('hide');
+
+                window.location='/';
+            }else{
+                //用户名被占用
+                $('#tishi').fadeIn();
+                $('#registModal').modal('hide');
+                $('#tishi').html('登陆失败。。。用户名或密码错误');
+            }
+        });
+    });
+    $('#postShuoshuo').click(function () {
+
+        //sleep(3000);
+        $.post('/postShuoshuo',{
+            'content':$('#content').val()
+        },function (result) {
+            if(result =='1'){
+                window.location='/';
+            }else{
+                //用户名被占用
+                $('#tishi').fadeIn();
+                $('#tishi').html('发布失败。。。');
+            }
+        });
+    });
+    function sleep(milliseconds) {
+        var date=new Date();
+        var timestamp=date.getTime();
+        console.log(timestamp);
+        while((new Date().getTime()-timestamp)<milliseconds){
+            console.log(new Date().getTime()-timestamp);
+        }
+        return;
+    }
+    //sleep(100);
+</script>
+</body>
+</html>
