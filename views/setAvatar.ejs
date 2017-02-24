@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="/favicon.ico">
+
+	<title>更改头像 - 班级说说</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="/css/jumbotron.css" rel="stylesheet">
+	<style>
+		.alert, #registModal {
+			display: none;
+		}
+	</style>
+	<script src="/js/jquery-1.11.3.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+</head>
+<body>
+<% include header.ejs%>
+
+<div class="container jumbotron">
+	<div class="row">
+		<h1>上传头像</h1>
+		<form method="post" action="/doSetAvatar" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="touxiang">选择头像</label>
+				<input type="file" class="form-control" id="touxiang" name="touxiang">
+			</div>
+
+			<input type="submit" id="uploadtouxiang" class="btn btn-default"></input>
+		</form>
+		<div class="alert alert-danger" id="tishi" role="alert"></div>
+	</div>
+
+	<div id="registModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+					<p id="registModalContent"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<footer>
+		<p>&copy; 2016 Company, Inc.</p>
+	</footer>
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/js/jquery-1.11.3.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+</body>
+</html>

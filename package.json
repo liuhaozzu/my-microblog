@@ -1,0 +1,19 @@
+{
+  "name": "my-weibo",
+  "version": "1.0.0",
+  "description": "需求：\r 1，没有转发功能；\r 2，注册，登陆后可以转发微博；\r 3，没有关注，收听机制，所有人的微博，都能被你看见，按时间排序；\r 4，可以点赞，评论。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.5.6",
+    "express": "^4.14.1",
+    "express-session": "^1.15.1",
+    "formidable": "^1.1.1",
+    "gm": "^1.23.0",
+    "mongodb": "^2.2.24"
+  }
+}
